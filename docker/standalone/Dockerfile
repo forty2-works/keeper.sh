@@ -1,4 +1,5 @@
 ARG S6_OVERLAY_VERSION=3.2.0.2
+ARG BUN_VERSION=1.3.14
 
 FROM oven/bun:1 AS base
 WORKDIR /app
@@ -20,10 +21,11 @@ RUN bun run --cwd services/api build && \
     bun run --cwd services/worker build && \
     bun run --cwd applications/web build
 
-FROM debian:bookworm-slim AS runtime
+FROM debian:trixie-slim AS runtime
 
 ARG S6_OVERLAY_VERSION
 ARG TARGETARCH
+ARG BUN_VERSION
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   ca-certificates \
@@ -46,7 +48,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends redis-server \
 RUN curl -fsSL https://caddyserver.com/api/download?os=linux\&arch=${TARGETARCH} -o /usr/bin/caddy \
   && chmod +x /usr/bin/caddy
 
-RUN curl -fsSL https://bun.sh/install | bash
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v${BUN_VERSION}"
 ENV PATH="/root/.bun/bin:${PATH}"
 
 RUN case "${TARGETARCH}" in \
