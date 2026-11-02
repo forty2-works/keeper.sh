@@ -383,7 +383,7 @@ const createAuth = (config: AuthConfig) => {
           return null;
         }
 
-        const jwt = await resourceActions.verifyAccessToken(accessToken, {
+        const jwt = await resourceActions.verifyBearerToken(accessToken, {
           jwksUrl,
           verifyOptions: {
             audience: mcpOptions.oauthProvider.validAudiences,
